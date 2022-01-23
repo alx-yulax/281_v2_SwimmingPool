@@ -1,6 +1,10 @@
 #include <iostream>
 #include <thread>
 #include <assert.h>
+#include <mutex>
+
+std::mutex access;
+
 
 class Swimmer {
     std::string name;
@@ -49,13 +53,19 @@ public:
         if (swimmers[i]->getResult() == 0) {
             if (swam >= 100) {
                 swimmers[i]->setResult(durationSec);
+                access.lock();
                 std::cout << swimmers[i]->getName() << " finished" << std::endl;
+                access.unlock();
             } else {
+                access.lock();
                 std::cout << swimmers[i]->getName() << " swam " << swam << " m." << std::endl;
+                access.unlock();
                 return true;
             }
         } else {
+            access.lock();
             std::cout << swimmers[i]->getName() << " finished" << std::endl;
+            access.unlock();
         }
         return false;
     }
